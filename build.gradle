@@ -16,6 +16,15 @@ dependencies {
 
 
 
-dependencies {
-    compile files('lib/JavaBridge.jar')
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Builds Health-Checker jar',
+                'Implementation-Version': version,
+                'Main-Class': 'com.freemahn.MainWindow'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }
