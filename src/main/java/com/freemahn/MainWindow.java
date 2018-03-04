@@ -6,10 +6,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -27,6 +24,8 @@ public class MainWindow
         extends Application {
 
     private Text actionStatus;
+    private Text inputFileLabel;
+    private Text outputFileLabel;
     private Stage savedStage;
     private Stage stage;
     private Button executeBtn;
@@ -55,7 +54,7 @@ public class MainWindow
         labelHb.getChildren().add(label);
 
         // Text area in a scrollpane and label
-        Label txtAreaLabel = new Label("Input file text:");
+        Label txtAreaLabel = new Label("Text:");
         txtAreaLabel.setFont(Font.font("Calibri", FontWeight.NORMAL, 20));
         txtArea = new TextArea();
         txtArea.setWrapText(true);
@@ -76,8 +75,9 @@ public class MainWindow
         Button openInputFile = new Button("Choose input file(TXT)...");
         openInputFile.setOnAction(new OpenFileButtonListener());
 
-        Button saveOutputFile = new Button("Choose output file(TXT)...");
+        Button saveOutputFile = new Button("Choose optional output file(TXT)...");
         saveOutputFile.setOnAction(new SaveButtonListener());
+        saveOutputFile.setTooltip(new Tooltip("Default output file is output.txt nearby jar location"));
 
         executeBtn = new Button("Execute parsing");
         executeBtn.setDisable(true);
@@ -86,12 +86,13 @@ public class MainWindow
         HBox buttonHb1 = new HBox(10);
         buttonHb1.setAlignment(Pos.CENTER);
         buttonHb1.getChildren().addAll(openInputFile, saveOutputFile, executeBtn);
-
+        outputFile = new File(defaultFileName);
         // Status message text
         actionStatus = new Text();
         actionStatus.setFont(Font.font("Calibri", FontWeight.NORMAL, 20));
         actionStatus.setFill(Color.FIREBRICK);
-        actionStatus.setText("Please choose input file, output file, and then execute");
+        actionStatus.setText("Please choose input file, output file(optional) " +
+                "and then execute\nCurrent output file: " + outputFile.getAbsolutePath());
 
         // Vbox
         VBox vbox = new VBox(30);
@@ -99,11 +100,13 @@ public class MainWindow
         vbox.getChildren().addAll(labelHb, txtAreaVbox, buttonHb1, actionStatus);
 
         // Scene
-        Scene scene = new Scene(vbox, 600, 400); // w x h
+        Scene scene = new Scene(vbox, 700, 400); // w x h
         primaryStage.setScene(scene);
         primaryStage.show();
 
         savedStage = primaryStage;
+
+
     }
 
     private class OpenFileButtonListener implements EventHandler<ActionEvent> {
@@ -119,6 +122,7 @@ public class MainWindow
                 encodedUrls = readFile(inputFile);
                 txtArea.setText(String.join("\n", encodedUrls));
                 txtArea.setDisable(false);
+                executeBtn.setDisable(false);
             }
 
         }
@@ -134,9 +138,7 @@ public class MainWindow
             fileChooser.setTitle("Save file");
             fileChooser.setInitialFileName(defaultFileName);
             outputFile = fileChooser.showSaveDialog(savedStage);
-            if (outputFile != null && inputFile != null) {
-                executeBtn.setDisable(false);
-            }
+
         }
     }
 
@@ -154,6 +156,8 @@ public class MainWindow
             } else {
                 actionStatus.setText("Wrong input file format, should be /x/ChDH or 13045770");
             }
+
+            txtArea.setText(String.join("\n", parsedResults));
             writeFile(parsedResults);
 
         }
@@ -169,11 +173,11 @@ public class MainWindow
                 line = br.readLine();
             }
             actionStatus.setText("File " +
-                    inputFile.toString() + " successfully read");
+                    inputFile.toString() + " successfully read.\nCurrent output file:  " + outputFile.getAbsolutePath());
 
         } catch (IOException e) {
             actionStatus.setText("An ERROR occurred while opening input file!" +
-                    inputFile.toString());
+                    inputFile.toString() +"\nCurrent output file:  " + outputFile.getAbsolutePath());
         }
         return stringList;
     }
@@ -184,7 +188,7 @@ public class MainWindow
                 writer.write(s + "\n");
             }
             actionStatus.setText("File " +
-                    outputFile.toString() + " successfully written!");
+                    outputFile.getAbsolutePath() + " successfully written!");
         } catch (IOException e) {
             e.printStackTrace();
             actionStatus.setText("An ERROR occurred while saving the file!" +

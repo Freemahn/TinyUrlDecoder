@@ -61,13 +61,11 @@ public class Parser {
     private static String decode(String url) {
         url = padRight(url, 8).replace(' ', 'A');
         byte[] bytes = Base64.getDecoder().decode(url);
-        System.out.println(Arrays.toString(bytes));
         ByteBuffer byteBuf = ByteBuffer.wrap(bytes);
 
         // then turn it into an IntBuffer, using big-endian ("Network") byte order:
         byteBuf.order(ByteOrder.LITTLE_ENDIAN);
         IntBuffer intBuf = byteBuf.asIntBuffer();
-//        System.out.println(Arrays.toString(byteBuf.array()));
         // finally, dump the contents of the IntBuffer into an array
         int[] integers = new int[intBuf.remaining()];
         intBuf.get(integers);
