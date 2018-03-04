@@ -72,10 +72,10 @@ public class MainWindow
         txtAreaVbox.setPadding(new Insets(5, 5, 5, 5));
         txtAreaVbox.getChildren().addAll(txtAreaLabel, scroll);
         // Button
-        Button openInputFile = new Button("Choose input file(TXT)...");
+        Button openInputFile = new Button("Choose input file...");
         openInputFile.setOnAction(new OpenFileButtonListener());
 
-        Button saveOutputFile = new Button("Choose optional output file(TXT)...");
+        Button saveOutputFile = new Button("Choose optional output file...");
         saveOutputFile.setOnAction(new SaveButtonListener());
         saveOutputFile.setTooltip(new Tooltip("Default output file is output.txt nearby jar location"));
 
@@ -114,8 +114,6 @@ public class MainWindow
         @Override
         public void handle(ActionEvent e) {
             FileChooser fileChooser = new FileChooser();
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setTitle("Load input file");
             inputFile = fileChooser.showOpenDialog(stage);
             if (inputFile != null) {
@@ -133,8 +131,6 @@ public class MainWindow
         @Override
         public void handle(ActionEvent e) {
             FileChooser fileChooser = new FileChooser();
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-            fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.setTitle("Save file");
             fileChooser.setInitialFileName(defaultFileName);
             outputFile = fileChooser.showSaveDialog(savedStage);
