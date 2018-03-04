@@ -42,7 +42,7 @@ public class Parser {
 
         String result = Base64.getEncoder().encodeToString(bytes);
         result = result.replace("+", "_").replace("/", "-");
-        result = "/x/" + result.split("AA==")[0];
+        result = "/x/" + result.split("AA==")[0].split("==")[0];
         return result;
     }
 
