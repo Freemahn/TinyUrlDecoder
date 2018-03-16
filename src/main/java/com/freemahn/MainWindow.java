@@ -19,6 +19,8 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MainWindow
         extends Application {
@@ -117,7 +119,10 @@ public class MainWindow
             fileChooser.setTitle("Load input file");
             inputFile = fileChooser.showOpenDialog(stage);
             if (inputFile != null) {
+                Predicate<String> blank = String::isEmpty;
                 encodedUrls = readFile(inputFile);
+                encodedUrls = encodedUrls.stream().filter(blank.negate())
+                        .collect(Collectors.toList());
                 txtArea.setText(String.join("\n", encodedUrls));
                 txtArea.setDisable(false);
                 executeBtn.setDisable(false);
@@ -173,7 +178,7 @@ public class MainWindow
 
         } catch (IOException e) {
             actionStatus.setText("An ERROR occurred while opening input file!" +
-                    inputFile.toString() +"\nCurrent output file:  " + outputFile.getAbsolutePath());
+                    inputFile.toString() + "\nCurrent output file:  " + outputFile.getAbsolutePath());
         }
         return stringList;
     }

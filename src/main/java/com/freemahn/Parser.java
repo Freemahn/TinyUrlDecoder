@@ -3,7 +3,6 @@ package com.freemahn;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +24,13 @@ public class Parser {
     }
 
     private static String id2TinyUrl(String id) {
-        String result = encode(Integer.parseInt(id));
+        String result;
+        try {
+            result = encode(Integer.parseInt(id));
+        } catch (Exception e) {
+            result = e.getMessage();
+            e.printStackTrace();
+        }
         return id + "," + result;
 
     }
@@ -33,8 +38,7 @@ public class Parser {
     private static String encode(Integer id) {
         byte[] bytes = ByteBuffer.allocate(4).putInt(id).array();
 
-        for(int i = 0; i < bytes.length / 2; i++)
-        {
+        for (int i = 0; i < bytes.length / 2; i++) {
             byte temp = bytes[i];
             bytes[i] = bytes[bytes.length - i - 1];
             bytes[bytes.length - i - 1] = temp;
@@ -52,7 +56,8 @@ public class Parser {
         try {
             result = decode(t);
         } catch (Exception e) {
-            System.err.println(url);
+            result = e.getMessage();
+            e.printStackTrace();
         }
         return url + "," + result;
     }
@@ -78,12 +83,11 @@ public class Parser {
     }
 
 
-
     public static byte[] stringToBytes(final String input) {
         // unlike Stirng.toByteArray(), we ignore any high-byte values of the characters.
         byte[] ret = new byte[input.length()];
-        for (int i = input.length() - 1; i >=0; i--) {
-            ret[i] = (byte)input.charAt(i);
+        for (int i = input.length() - 1; i >= 0; i--) {
+            ret[i] = (byte) input.charAt(i);
         }
         return ret;
     }
